@@ -9,16 +9,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ipam.Pages
 {
-    public class Foo
-    {
-        public void xxx()
-        {
-            Func<String, String> method = null;
-            method = (str) => {
-                return method(str);
-            };
-        }
-    }
     public class SubnetsModel : PageModel
     {
         public SubnetsModel(IPAMContext db)
