@@ -1,26 +1,55 @@
-@page
+@page "{handler?}"
 @model SubnetsModel
+@inject IPAMContext Db
+
 @{
     ViewData["Title"] = "IPAM Subnets";
-}
 
-<h2>Subnets</h2>
-<div class="list-group" style="display: inline-block">
-    @foreach (var subnet in Model.Subnets)
-    {
+    Func<Subnet, Microsoft.AspNetCore.Html.IHtmlContent> CreateSubnetView = null;
+    CreateSubnetView = @<text>@{
+        var subnet = item;
         <button class="list-group-item" type="button" data-toggle="collapse" data-target="#@subnet.GetHashCode()" aria-expanded="false" aria-controls="@subnet.GetHashCode()">
             @subnet.Key
             &nbsp;
-            <span class="badge">@Model.Hosts.Count(h => h.Subnet == @subnet.Key)</span>
+            @{
+                var count = @Db.Data.Hosts.Count(h => h.Subnet == @subnet.Key);
+                count += @Db.Data.Subnets.Count(s => s.Parent == subnet.Key);
+                <span class="badge">@count</span>
+            }
         </button>
+        
         <div class="collapse" id="@subnet.GetHashCode()">
             <div class="well">
-                @foreach (var host in Model.Hosts.Where(h => h.Subnet == @subnet.Key))
+                @foreach (var s in Db.Data.Subnets.Where(ss => ss.Parent == subnet.Key))
+                {
+                    @CreateSubnetView(s)
+                }
+                @if(Db.Data.Hosts.Any(h => h.Subnet == @subnet.Key))
+                {
+                    <h4>Hosts:</h4>
+                }
+                @foreach (var host in Db.Data.Hosts.Where(h => h.Subnet == @subnet.Key))
                 {
                     @host.Name<br>
                 }
             </div>
         </div>
+    }</text>;
+}
+
+@foreach (var msg in Model.Db.Messages)
+{
+<div class="alert alert-info alert-dismissible" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>@msg</strong>
+</div>
+}
+<h2>Subnets</h2>
+<div class="list-group" style="display: inline-block">
+    @foreach (var subnet in Model.Subnets.Where(s => s.Parent == null))
+    {
+        @CreateSubnetView(subnet)
+
     }
 </div>
 <div>

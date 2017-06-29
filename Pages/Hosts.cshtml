@@ -35,26 +35,6 @@
                         </div>
                     </div>                    
                     <div class="form-group">
-                        <label for="subnet" class="control-label col-sm-2">Subnet:</label>
-                        <div class="col-sm-10">
-                            <select class="form-control" asp-for="NewHostData.Subnet">
-                                @foreach (var subnet in Model.SubnetSelect)
-                                {
-                                    @if(@host.Subnet == @subnet.Value)
-                                    {
-                                        <option value="@subnet.Value" selected="selected" >@subnet.Text</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@subnet.Value">@subnet.Text</option>
-                                    }
-                                }
-                            </select>
-                            <span asp-validation-for="NewHostData.Subnet" class="text-danger"></span>
-                            
-                        </div>
-                    </div>
-                    <div class="form-group">
                         <label for="subnet" class="control-label col-sm-2">Owner:</label>
                         <div class="col-sm-10">
                             <select class="form-control" asp-for="NewHostData.Owner">
@@ -73,7 +53,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="subnet" class="control-label col-sm-2">Location:</label>
+                        <label class="control-label col-sm-2">Location:</label>
                         <div class="col-sm-10">
                             <select class="form-control" asp-for="NewHostData.Location">
                                 @foreach (var location in Model.LocationSelect)
@@ -140,14 +120,6 @@
                 <span asp-validation-for="NewHostData.MacAddress" class="text-danger"></span>
             </div>
         </div>        
-        <div class="form-group">
-            <label for="subnet" class="control-label col-sm-2">Subnet:</label>
-            <div class="col-sm-10">
-                <select class="form-control" asp-for="NewHostData.Subnet" asp-items="Model.SubnetSelect">
-                </select>
-                <span asp-validation-for="NewHostData.Subnet" class="text-danger"></span>
-            </div>
-        </div>
         <div class="form-group">
             <label for="subnet" class="control-label col-sm-2">Owner:</label>
             <div class="col-sm-10">

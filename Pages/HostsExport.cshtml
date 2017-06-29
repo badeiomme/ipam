@@ -1,0 +1,7 @@
+@page
+@inject IPAMContext Db
+
+@foreach (var host in @Db.Data.Hosts)
+{
+    <text>@host.IPAddress @host.Name</text><br>
+}

@@ -5,6 +5,7 @@ using System.Net;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace ipam
 {
@@ -45,11 +46,16 @@ namespace ipam
             return Int2Str(mask);
         }
 
+        public String GetNetworkAddress()
+        {
+            return Int2Str(network);
+        }
+
         public String Key { get; private set; }
         public IPAddress Address { get; private set; }
         public UInt16 Size { get; private set; }
 
-        public Subnet Parent { get; set; }
+        public String Parent { get; set; }
 
         private uint ip, mask, network;
 
@@ -82,6 +88,7 @@ namespace ipam
         public String Owner { get; set; }
         public String Location { get; set; }
         public String Comment { get; set; }
+        public String MacAddress { get; set; }
     }
 
     class IPAddressSerializer : JsonConverter
@@ -142,7 +149,40 @@ namespace ipam
             return 0;
         }
 
+        public void CalculateSubnetParents()
+        {
+            foreach (var subnet in Data.Subnets)
+            {
+                subnet.Parent = null;
+                var network = IPAddress.Parse(subnet.GetNetworkAddress());
+                var mask = IPAddress.Parse(subnet.GetNetmask());
+                
+                var parent = Data.Subnets
+                    .Where(s => s.Size < subnet.Size)
+                    .Where(outer => outer.Address.IsInSameSubnet(network, IPAddress.Parse(outer.GetNetmask())))
+                    .OrderByDescending(o => o.Size).FirstOrDefault();
+
+                if (parent != null)
+                {
+                    subnet.Parent = parent.Key;
+                }
+            }
+
+            SaveChanges();
+        }
+        public void CalculateHostsSubnet()
+        {
+            foreach (var host in Data.Hosts)
+            {
+                var subnet = Data.Subnets.Where(s => host.IPAddress.IsInSameSubnet(IPAddress.Parse(s.GetNetworkAddress()), IPAddress.Parse(s.GetNetmask())))
+                    .OrderByDescending(ss => ss.Size).FirstOrDefault();
+
+                host.Subnet = subnet?.Key;
+            }
+        }
+
         public Data Data { get; private set; }
+        public List<String> Messages { get; } = new List<String>();
     }
 
     public class Data

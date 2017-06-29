@@ -32,14 +32,6 @@ namespace ipam.Pages
             return Page();
         }
 
-        public List<SelectListItem> SubnetSelect
-        {
-            get
-            {
-                return Db.Data.Subnets.Select(subnet => new SelectListItem { Value = subnet.Key, Text = subnet.Key }).Prepend(new SelectListItem()).ToList();
-            }
-        }
-
         public List<SelectListItem> OwnerSelect
         {
             get
@@ -64,7 +56,22 @@ namespace ipam.Pages
 
                 if (host != null)
                 {
+                    if (Db.Data.Hosts.FirstOrDefault(h => h.Name == host.Name) != null)
+                    {
+                        Message = $"Host {host.Name} already added!";
+                        return Page();
+                    }
+
                     Db.Data.Hosts.Add(host);
+                    Db.CalculateHostsSubnet();
+                    
+                    if (String.IsNullOrEmpty(host.Subnet))
+                    {
+                        Message = $"No Subnet found for IP {host.IPAddress}";
+                        Db.Data.Hosts.Remove(host);
+
+                        return Page();
+                    }
 
                     Db.SaveChanges();
                 }
@@ -84,7 +91,17 @@ namespace ipam.Pages
                 if (ret != null)
                 {
                     var idx = Db.Data.Hosts.FindIndex(h => h == host);
+                    var old = Db.Data.Hosts[idx];
                     Db.Data.Hosts[idx] = ret;
+                    Db.CalculateHostsSubnet();
+
+                    if (String.IsNullOrEmpty(ret.Subnet))
+                    {
+                        Message = $"No Subnet found for IP {ret.IPAddress}";
+                        Db.Data.Hosts[idx] = old;
+                         return Page();
+                    }
+
                     Db.SaveChanges();
                 }
             }
@@ -107,23 +124,6 @@ namespace ipam.Pages
             else
                 host.IPAddress = addr;
 
-            if (Db.Data.Subnets.FirstOrDefault(s => s.Key == NewHostData.Subnet) == null)
-            {
-                Message = $"Subnet {NewHostData.Subnet} not found";
-                return null;
-            }
-            else
-                host.Subnet = NewHostData.Subnet;
-
-            var subnet = new Subnet(host.Subnet);
-            var mask = IPAddress.Parse(subnet.GetNetmask());
-            var network = subnet.Address.GetNetworkAddress(mask);
-
-            if (!host.IPAddress.IsInSameSubnet(network, mask))
-            {
-                Message = $"Address {host.IPAddress} not in subnet {subnet.Key}";
-                return null;
-            }
             if (!String.IsNullOrEmpty(NewHostData.Owner) && Db.Data.Owner.FirstOrDefault(o => o == NewHostData.Owner) == null)
             {
                 Message = $"Owner {NewHostData.Owner} not found";
@@ -141,7 +141,9 @@ namespace ipam.Pages
                 host.Location = NewHostData.Location;
 
             host.Comment = NewHostData.Comment;
+            host.MacAddress = NewHostData.MacAddress;
 
+            NewHostData = null;
             return host;
         }
 
@@ -155,9 +157,6 @@ namespace ipam.Pages
         [Required]
         [RegularExpression(@"((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")]
         public String IPAddress { get; set; }
-
-        [Required]
-        public String Subnet { get; set; }
 
         public String Owner { get; set; }
 

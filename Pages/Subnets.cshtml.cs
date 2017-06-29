@@ -3,11 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ipam.Pages
 {
+    public class Foo
+    {
+        public void xxx()
+        {
+            Func<String, String> method = null;
+            method = (str) => {
+                return method(str);
+            };
+        }
+    }
     public class SubnetsModel : PageModel
     {
         public SubnetsModel(IPAMContext db)
@@ -23,7 +34,7 @@ namespace ipam.Pages
         [BindProperty]
         public UInt16 NewSize { get; set; }
 
-        IPAMContext Db { get; }
+        public IPAMContext Db { get; }
 
 
         public List<Subnet> Subnets;
@@ -32,7 +43,12 @@ namespace ipam.Pages
         public IActionResult OnPost()
         {
             var subnet = new Subnet(NewAddress, NewSize);
-            Db.Data.Subnets.Add(subnet);
+            var addr = subnet.GetNetworkAddress();
+
+            Db.Data.Subnets.Add(new Subnet(addr, NewSize));
+
+            Db.CalculateSubnetParents();
+            Db.CalculateHostsSubnet();
 
             Db.SaveChanges();
 
