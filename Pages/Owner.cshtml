@@ -1,0 +1,26 @@
+@page
+@model OwnerModel
+
+<h3>Owners:</h3>
+<div class="list-group" style="display: inline-block">
+    @foreach (var owner in Model.Db.Data.Owner)
+    {
+        <button class="list-group-item">
+            @owner
+        </button>
+    }
+</div>
+
+
+<div>
+    <form method="POST">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <input type="text" class="form-control" placeholder="Enter owner name" asp-for="NewOwner.Owner">
+            <span asp-validation-for="NewOwner.Owner" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-default" asp-page-handler="AddOwner">Add new owner</button>
+        </div>
+    </form>
+</div>

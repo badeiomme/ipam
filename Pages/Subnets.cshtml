@@ -1,0 +1,32 @@
+@page
+@model SubnetsModel
+@{
+    ViewData["Title"] = "IPAM Subnets";
+}
+
+<h2>Subnets</h2>
+<div class="list-group" style="display: inline-block">
+    @foreach (var subnet in Model.Subnets)
+    {
+        <button class="list-group-item" type="button" data-toggle="collapse" data-target="#@subnet.GetHashCode()" aria-expanded="false" aria-controls="@subnet.GetHashCode()">
+            @subnet.Key
+            &nbsp;
+            <span class="badge">@Model.Hosts.Count(h => h.Subnet == @subnet.Key)</span>
+        </button>
+        <div class="collapse" id="@subnet.GetHashCode()">
+            <div class="well">
+                @foreach (var host in Model.Hosts.Where(h => h.Subnet == @subnet.Key))
+                {
+                    @host.Name<br>
+                }
+            </div>
+        </div>
+    }
+</div>
+<div>
+    <h4>Add new subnet:</h4>
+    <form method="POST">
+        <input asp-for="NewAddress" />/<input asp-for="NewSize" />
+        <input type="submit"/>
+    </form>
+</div>

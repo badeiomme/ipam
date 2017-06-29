@@ -1,0 +1,26 @@
+@page
+@model LocationModel
+
+<h3>Locations:</h3>
+<div class="list-group" style="display: inline-block">
+    @foreach (var Location in Model.Db.Data.Locations)
+    {
+        <button class="list-group-item">
+            @Location
+        </button>
+    }
+</div>
+
+
+<div>
+    <form method="POST">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <input type="text" class="form-control" placeholder="Enter Location name" asp-for="NewLocation.Location">
+            <span asp-validation-for="NewLocation.Location" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-default" asp-page-handler="AddLocation">Add new Location</button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,177 @@
+@page
+@model HostsModel
+<h2>Hosts</h2>
+<div>
+<div class="list-group">
+    @foreach (var host in Model.Db.Data.Hosts)
+    {
+        <button class="list-group-item" type="button" data-toggle="collapse" data-target="#@host.GetHashCode()">
+            @host.Name
+        </button>
+        <div class="collapse" id="@host.GetHashCode()">
+            <div class="well">
+                <form class="form-horizontal" method="POST">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="NewHostData.OldHostName" value="@host.Name">
+                    <div class="form-group">
+                        <label for="hostname" class="control-label col-sm-2">Hostname:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Enter Hostname"asp-for="NewHostData.Hostname" value="@host.Name">
+                            <span asp-validation-for="NewHostData.Hostname" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="ipaddress" class="control-label col-sm-2">IP Address:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Enter IPAddress" asp-for="NewHostData.IPAddress" value="@host.IPAddress">
+                            <span asp-validation-for="NewHostData.IPAddress" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="hostname" class="control-label col-sm-2">MAC:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Enter mac address"asp-for="NewHostData.MacAddress" value="@host.MacAddress">
+                            <span asp-validation-for="NewHostData.MacAddress" class="text-danger"></span>
+                        </div>
+                    </div>                    
+                    <div class="form-group">
+                        <label for="subnet" class="control-label col-sm-2">Subnet:</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" asp-for="NewHostData.Subnet">
+                                @foreach (var subnet in Model.SubnetSelect)
+                                {
+                                    @if(@host.Subnet == @subnet.Value)
+                                    {
+                                        <option value="@subnet.Value" selected="selected" >@subnet.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@subnet.Value">@subnet.Text</option>
+                                    }
+                                }
+                            </select>
+                            <span asp-validation-for="NewHostData.Subnet" class="text-danger"></span>
+                            
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="subnet" class="control-label col-sm-2">Owner:</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" asp-for="NewHostData.Owner">
+                                @foreach (var owner in Model.OwnerSelect)
+                                {
+                                    @if(@host.Owner == @owner.Value)
+                                    {
+                                        <option value="@owner.Value" selected="selected" >@owner.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@owner.Value">@owner.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="subnet" class="control-label col-sm-2">Location:</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" asp-for="NewHostData.Location">
+                                @foreach (var location in Model.LocationSelect)
+                                {
+                                    @if(@host.Location == @location.Value)
+                                    {
+                                        <option value="@location.Value" selected="selected" >@location.Text</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@location.Value">@location.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>        
+                    <div class="form-group">
+                        <label class="control-label col-sm-2">Comment:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Enter Comment" asp-for="NewHostData.Comment">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" class="btn btn-default" asp-page-handler="EditHost">Edit Host</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+</div>
+</div>
+@if (Model.Message != null)
+{
+    <div class="alert alert-danger" role="alert">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        @Model.Message
+    </div>
+}
+
+<h3>Add new Host</h3>
+<div>
+    <form class="form-horizontal" method="POST">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label for="hostname" class="control-label col-sm-2">Hostname:</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" placeholder="Enter Hostname" asp-for="NewHostData.Hostname">
+                <span asp-validation-for="NewHostData.Hostname" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="ipaddress" class="control-label col-sm-2">IP Address:</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" placeholder="Enter IPAddress" asp-for="NewHostData.IPAddress">
+                <span asp-validation-for="NewHostData.IPAddress" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="hostname" class="control-label col-sm-2">MAC:</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" placeholder="Enter mac address"asp-for="NewHostData.MacAddress">
+                <span asp-validation-for="NewHostData.MacAddress" class="text-danger"></span>
+            </div>
+        </div>        
+        <div class="form-group">
+            <label for="subnet" class="control-label col-sm-2">Subnet:</label>
+            <div class="col-sm-10">
+                <select class="form-control" asp-for="NewHostData.Subnet" asp-items="Model.SubnetSelect">
+                </select>
+                <span asp-validation-for="NewHostData.Subnet" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="subnet" class="control-label col-sm-2">Owner:</label>
+            <div class="col-sm-10">
+                <select class="form-control" asp-for="NewHostData.Owner" asp-items="Model.OwnerSelect">
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="subnet" class="control-label col-sm-2">Location:</label>
+            <div class="col-sm-10">
+                <select class="form-control" asp-for="NewHostData.Location" asp-items="Model.LocationSelect">
+                </select>
+            </div>
+        </div>        
+        <div class="form-group">
+            <label class="control-label col-sm-2">Comment:</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" placeholder="Enter Comment" asp-for="NewHostData.Comment">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-default" asp-page-handler="AddHost">Submit</button>
+            </div>
+        </div>
+    </form>
+</div>
