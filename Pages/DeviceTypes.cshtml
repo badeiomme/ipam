@@ -17,11 +17,11 @@
     <form method="POST">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group">
-            <input type="text" class="form-control" placeholder="Enter Device name" asp-for="NewDevice.Device">
+            <input type="text" class="form-control" placeholder="Enter new device type..." asp-for="NewDevice.Device">
             <span asp-validation-for="NewDevice.Device" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <button type="submit" class="btn btn-default" asp-page-handler="AddDevice">Add new Device</button>
+            <button type="submit" class="btn btn-default" asp-page-handler="AddDevice">Add new Device Type</button>
         </div>
     </form>
 </div>
