@@ -89,6 +89,7 @@ namespace ipam
         public String Location { get; set; }
         public String Comment { get; set; }
         public String MacAddress { get; set; }
+        public String Type { get; set; }
     }
 
     class IPAddressSerializer : JsonConverter
@@ -121,10 +122,18 @@ namespace ipam
     {
         public IPAMContext()
         {
-            var str = File.ReadAllText("data.bin");
+            String data = "";
             try
             {
-                Data = JsonConvert.DeserializeObject<Data>(str, new IPAddressSerializer());
+                data = File.ReadAllText("data.bin");
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                Data = JsonConvert.DeserializeObject<Data>(data, new IPAddressSerializer());
             }
             catch (JsonReaderException ex)
             {
@@ -191,6 +200,7 @@ namespace ipam
         public List<Host> Hosts { get; } = new List<Host>();
         public HashSet<String> Locations { get; } = new HashSet<String>();
         public HashSet<String> Owner { get; } = new HashSet<String>();
-        public Dictionary<String, String> SubnetComments { get; } = new Dictionary<string, string>();
+        public Dictionary<String, String> SubnetComments { get; } = new Dictionary<String, String>();
+        public HashSet<String> DeviceTypes { get; } = new HashSet<String>();
     }
 }

@@ -20,7 +20,7 @@
         
         <div class="collapse" id="@subnet.GetHashCode()">
             <div class="well">
-                @foreach (var s in Db.Data.Subnets.Where(ss => ss.Parent == subnet.Key))
+                @foreach (var s in Db.Data.Subnets.Where(ss => ss.Parent == subnet.Key).OrderBy(sss => sss.Key))
                 {
                     @CreateSubnetView(s)
                 }
@@ -46,16 +46,23 @@
 }
 <h2>Subnets</h2>
 <div class="list-group" style="display: inline-block">
-    @foreach (var subnet in Model.Subnets.Where(s => s.Parent == null))
+    @foreach (var subnet in Model.Subnets.Where(s => s.Parent == null).OrderBy(ss => ss.Key))
     {
         @CreateSubnetView(subnet)
-
     }
 </div>
-<div>
-    <h4>Add new subnet:</h4>
-    <form method="POST">
-        <input asp-for="NewAddress" />/<input asp-for="NewSize" />
-        <input type="submit"/>
-    </form>
-</div>
+
+<form class="form-horizontal" method="POST">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <div style="display: inline-block">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Add new Subnet" asp-for="NewSubnet.Address">
+                <span class="input-group-btn">
+                    <button type="submit" class="btn btn-default" asp-page-handler="AddSubnet">Add</button>
+                </span>
+            </div>
+            <span asp-validation-for="NewSubnet.Address" class="text-danger"></span>
+        </div>
+    </div>
+</form>

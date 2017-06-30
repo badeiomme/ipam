@@ -40,6 +40,15 @@ namespace ipam.Pages
             }
         }
 
+
+        public List<SelectListItem> TypeSelect
+        {
+            get
+            {
+                return Db.Data.DeviceTypes.Select(type => new SelectListItem { Value = type, Text = type }).Prepend(new SelectListItem()).ToList();
+            }
+        }
+
         public List<SelectListItem> LocationSelect
         {
             get
@@ -140,6 +149,7 @@ namespace ipam.Pages
             else
                 host.Location = NewHostData.Location;
 
+            host.Type = NewHostData.DeviceType;
             host.Comment = NewHostData.Comment;
             host.MacAddress = NewHostData.MacAddress;
 
@@ -168,6 +178,9 @@ namespace ipam.Pages
 
         [RegularExpression(@"[a-fA-F0-9]{2}(:[a-fA-F0-9]{2}){5}")]
         public String MacAddress { get; set; }
+
+        [Required]
+        public String DeviceType { get; set; }
 
     }
 }

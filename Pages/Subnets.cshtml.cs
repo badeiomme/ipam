@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -20,9 +21,7 @@ namespace ipam.Pages
         }
 
         [BindProperty]
-        public String NewAddress { get; set; }
-        [BindProperty]
-        public UInt16 NewSize { get; set; }
+        public NewSubnet NewSubnet { get; set; }
 
         public IPAMContext Db { get; }
 
@@ -30,23 +29,32 @@ namespace ipam.Pages
         public List<Subnet> Subnets;
         public List<Host> Hosts;
 
-        public IActionResult OnPost()
-        {
-            var subnet = new Subnet(NewAddress, NewSize);
-            var addr = subnet.GetNetworkAddress();
-
-            Db.Data.Subnets.Add(new Subnet(addr, NewSize));
-
-            Db.CalculateSubnetParents();
-            Db.CalculateHostsSubnet();
-
-            Db.SaveChanges();
-
-            return Page();
-        }
         public IActionResult OnGet()
         {
             return Page();
         }
+
+        public void OnPostAddSubnet()
+        {
+            if (ModelState.IsValid)
+            {
+                var subnet = new Subnet(NewSubnet.Address);
+                var addr = subnet.GetNetworkAddress();
+
+                Db.Data.Subnets.Add(new Subnet(addr, subnet.Size));
+
+                Db.CalculateSubnetParents();
+                Db.CalculateHostsSubnet();
+
+                Db.SaveChanges();
+            }
+        }
+    }
+
+    public class NewSubnet
+    {
+        [Required]
+        public String Address { get; set; }
+
     }
 }
